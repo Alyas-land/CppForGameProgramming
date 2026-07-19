@@ -8,10 +8,10 @@
           "name": "Debug",
           "type": "cppdbg",
           "request": "launch",
-          "program": "${workspaceFolder}/${fileBasenameNoExtension}",
+          "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
           "args": [],
           "stopAtEntry": false,
-          "cwd": "${workspaceFolder}",
+          "cwd": "${fileDirname}",
           "environment": [],
           "externalConsole": false,
           "MIMode": "gdb",
@@ -31,7 +31,7 @@
           "linux": {
             "miDebuggerPath": "/usr/bin/gdb",
           },
-          "preLaunchTask": "build debug"
+          "preLaunchTask": "Raylib Build"
         },
         {
           "name": "Run",
@@ -39,10 +39,10 @@
           "request": "launch",
           "args": [],
           "stopAtEntry": false,
-          "cwd": "${workspaceFolder}",
+          "cwd": "${fileDirname}",
           "environment": [],
           "externalConsole": false,
-          "program": "${workspaceFolder}/${fileBasenameNoExtension}",
+          "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
           "MIMode": "gdb",
           "windows": {
             "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
@@ -54,7 +54,7 @@
           "linux": {
             "miDebuggerPath": "/usr/bin/gdb"
           },
-          "preLaunchTask": "build release",
+          "preLaunchTask": "Raylib Build",
         }
       ]
     }
