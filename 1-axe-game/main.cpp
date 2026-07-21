@@ -8,6 +8,7 @@ int main(){
     InitWindow(ScreenWidth, ScreenHeight, "Axe Game");
     // set fps for game
     SetTargetFPS(60);
+    float playerSpeed{500.0f};
 
     // Circle coordinates
     Vector2 ballPosition = {ScreenWidth/2, ScreenHeight/2};
@@ -21,7 +22,7 @@ int main(){
     // Axe coordinates 
     Vector2 rectanglePosition = {300 ,0};
     Vector2 rectangleSize = {50, 50};
-    int direction{10};
+    int direction{700};
     // Initialize the rectangle edge
     int leftRectangleX = rectanglePosition.x;
     int rightRectangleX = rectanglePosition.x + rectangleSize.x;
@@ -39,10 +40,9 @@ int main(){
         // Begin game logic
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        if (
-        ){
-            collisionWithAxe = true;
-        }
+        // if (){
+        //     collisionWithAxe = true;
+        // }
 
         if (collisionWithAxe){
            DrawText("Game Over!", (ScreenWidth/2 - 100), ScreenHeight/2, 40, RED); 
@@ -54,18 +54,18 @@ int main(){
            Input logic and updating script 
            */
            if (IsKeyDown(KEY_A) && ballPosition.x > 0)
-               ballPosition.x -= 7.0f;
+               ballPosition.x -= playerSpeed * GetFrameTime();
            if (IsKeyDown(KEY_D) && ballPosition.x < ScreenWidth)
-               ballPosition.x += 7.0f;
+               ballPosition.x += playerSpeed * GetFrameTime();
            if (IsKeyDown(KEY_W) && ballPosition.y > 0)
-               ballPosition.y -= 7.0f;
+               ballPosition.y -= playerSpeed * GetFrameTime();
            if (IsKeyDown(KEY_S) && ballPosition.y < ScreenHeight)
-               ballPosition.y += 7.0f;
+               ballPosition.y += playerSpeed * GetFrameTime();
            
            /*
            Axe logic
            */
-           rectanglePosition.y += direction;
+           rectanglePosition.y += direction * GetFrameTime();
            if (rectanglePosition.y > ScreenHeight || rectanglePosition.y < 0){
                direction = -direction;  
            }
