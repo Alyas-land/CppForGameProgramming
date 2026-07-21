@@ -50,6 +50,21 @@ int main(){
 
        else{
 
+            // Update edge (collision)
+            leftCircleX = ballPosition.x - circleRadius;
+            rightCircleX = ballPosition.x + circleRadius;
+            topCircleY = ballPosition.y - circleRadius;
+            bottomCircleY = ballPosition.y + circleRadius;
+            leftRectangleX = rectanglePosition.x;
+            rightRectangleX = rectanglePosition.x + rectangleSize.x;
+            topRectangleY = rectanglePosition.y;
+            bottomRectangleY = rectanglePosition.y + rectangleSize.y;
+
+            collisionWithAxe = (leftRectangleX <= rightCircleX) &&
+                (rightRectangleX >= leftCircleX) &&
+                (topRectangleY <= bottomCircleY) &&
+                (bottomRectangleY >= topCircleY);
+
            /*
            Input logic and updating script 
            */
