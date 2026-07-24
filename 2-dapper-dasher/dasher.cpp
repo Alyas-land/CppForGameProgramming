@@ -13,21 +13,30 @@ int main(){
     // Set screen game size
     const int ScreenWidth{800};
     const int ScreenHeight{600};
-
+    // Initialize game screen
+    InitWindow(ScreenWidth, ScreenHeight, "Dapper Dasher");
+    SetTargetFPS(60);
+    
     // Acceleration due to gravity
     float gravity{1.0f};
     float jumpVel{15.0f};
     bool isGrounded{false};
-
-
-    // Rectangle dimensions
-    Vector2 rectangleSize{50.0f, 80.0f};
-
-    float posY{ScreenHeight - rectangleSize.y};
     float velocity{0.0f};
 
-    InitWindow(ScreenWidth, ScreenHeight, "Dapper Dasher");
-    SetTargetFPS(60);
+    // Sprite dimensions
+    Texture2D scarfy = LoadTexture("assets/scarfy.png");
+    Rectangle* scarfyRec;
+    scarfyRec->height = scarfy.height;
+    scarfyRec->width = scarfy.width;
+    scarfyRec->x = 0; 
+    scarfyRec->y = 0; 
+    Vector2* scarfyPos;
+    scarfyPos->x = (ScreenWidth - scarfyRec->width)/2;
+    scarfyPos->y = ScreenHeight - scarfyRec->height;
+
+    float velocity{0.0f};
+
+    
 
     while(!WindowShouldClose()){
 
@@ -35,7 +44,7 @@ int main(){
         ClearBackground(RAYWHITE);
     
         // Check object on the ground
-        if (posY >= (ScreenHeight - rectangleSize.y)){
+        if (scarfyPos->y >= (ScreenHeight - scarfyRec->height)){
             //rectanglr on the ground
             velocity = 0.0f;
             isGrounded = true;
@@ -50,13 +59,12 @@ int main(){
             isGrounded = false;
         }
         // Update position
-        posY += velocity;
-
-
-        DrawRectangleV({ScreenWidth/2, posY}, rectangleSize, BLUE);
-
-
+        scarfyPos->y += velocity;
+        DrawTextureRec(scarfy, *scarfyRec, *scarfyPos, WHITE);
 
         EndDrawing();
     }
+    UnloadTexture(scarfy);
+    CloseWindow();
+
 }
