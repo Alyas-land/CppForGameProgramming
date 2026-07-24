@@ -34,10 +34,7 @@ int main(){
     scarfyPos->x = (ScreenWidth - scarfyRec->width)/2;
     scarfyPos->y = ScreenHeight - scarfyRec->height;
 
-    float velocity{0.0f};
-
     
-
     while(!WindowShouldClose()){
 
         BeginDrawing();
