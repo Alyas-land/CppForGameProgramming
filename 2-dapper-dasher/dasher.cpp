@@ -24,7 +24,7 @@ int main(){
     bool isGrounded{false};
     float velocity{0.0f};
 
-    // Sprite dimensions
+    // Scarf variable(dimensions)
     Texture2D scarfy = LoadTexture("assets/scarfy.png");
     Rectangle* scarfyRec = new Rectangle();
     scarfyRec->height = scarfy.height;
@@ -34,6 +34,22 @@ int main(){
     Vector2* scarfyPos = new Vector2();
     scarfyPos->x = (ScreenWidth - scarfyRec->width)/2;
     scarfyPos->y = ScreenHeight - scarfyRec->height;
+
+    // Nebula variables
+    Texture2D nebula = LoadTexture("assets/12_nebula_spritesheet.png");
+    Rectangle* nebRec = new Rectangle{
+        0, // x position
+        0, // y position
+        nebula.height/8, // Height
+        nebula.width/8   // Width
+    };
+
+    Vector2* nebPos = new Vector2{
+        ScreenWidth, // x
+        ScreenHeight - nebRec->height // y
+    };
+    
+    int nebVelocity{};
 
     // Frame animation
     int frame{0};
@@ -78,11 +94,14 @@ int main(){
         }
 
         DrawTextureRec(scarfy, *scarfyRec, *scarfyPos, WHITE);
+        DrawTextureRec(nebula, *nebRec, *nebPos, WHITE);
 
         EndDrawing();
     }
     UnloadTexture(scarfy);
+    UnloadTexture(nebula);
     delete scarfyPos, scarfyRec;
+    delete nebRec, nebPos;
     CloseWindow();
 
 }
