@@ -43,6 +43,7 @@ int main(){
         nebula.height/8, // Height
         nebula.width/8   // Width
     };
+    float nebVel{-600.0f};
 
     Vector2* nebPos = new Vector2{
         ScreenWidth, // x
@@ -81,20 +82,33 @@ int main(){
             velocity += jumpVel;
             isGrounded = false;
         }
-        // Update position
+        // Update nebula position
+        nebPos->x += nebVel * deltaTime;
+
+        // Update scarfy position
         scarfyPos->y += velocity * deltaTime;
         
         // Update running time
         runningTimeAnim += deltaTime;
         if (runningTimeAnim >= updateTimeAnim){
-            runningTimeAnim = 0.0f;
-            scarfyRec->x = (frame * scarfyRec->width);
-            frame++;
-            if(frame > 5) frame=0;
+            // Check scarfy on gound or on air and continue or pause animation frame
+            if (!isGrounded) {
+                if (scarfyRec->x <= (3 * scarfyRec->width)) scarfyRec->x = 0;
+                scarfyRec->x = scarfyRec->x = 5;
+            }
+            else{
+                runningTimeAnim = 0.0f;
+                scarfyRec->x = (frame * scarfyRec->width);
+                frame++;
+                if(frame > 5) frame=0;
+                
+            }
         }
-
-        DrawTextureRec(scarfy, *scarfyRec, *scarfyPos, WHITE);
+        
+        // Draw nebula
         DrawTextureRec(nebula, *nebRec, *nebPos, WHITE);
+        // Draw Scarfy
+        DrawTextureRec(scarfy, *scarfyRec, *scarfyPos, WHITE);
 
         EndDrawing();
     }
