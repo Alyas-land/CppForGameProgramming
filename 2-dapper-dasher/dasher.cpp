@@ -93,8 +93,7 @@ int main(){
         if (runningTimeAnim >= updateTimeAnim){
             // Check scarfy on gound or on air and continue or pause animation frame
             if (!isGrounded) {
-                if (scarfyRec->x <= (3 * scarfyRec->width)) scarfyRec->x = 0;
-                scarfyRec->x = scarfyRec->x = 5;
+                scarfyRec->x = 5 * scarfyRec->width ;
             }
             else{
                 runningTimeAnim = 0.0f;
