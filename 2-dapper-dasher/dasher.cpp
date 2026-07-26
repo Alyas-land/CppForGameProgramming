@@ -17,6 +17,12 @@ int main(){
     InitWindow(ScreenWidth, ScreenHeight, "Dapper Dasher");
     SetTargetFPS(60);
     
+    // Initialize audio device
+    InitAudioDevice();
+
+    Music music = LoadMusicStream("assets/Tar-Hawk.mp3");
+    PlayMusicStream(music);
+    
     
     // Acceleration due to gravity
     float gravity{1'000.0f};
@@ -52,14 +58,20 @@ int main(){
     
     int nebVelocity{};
 
-    // Frame animation
+    // Scarfy frame animation
     int frame{0};
     float updateTimeAnim{1.0f/16.0f};
     float runningTimeAnim{0};
 
+    // Nebula frame animation
+    int nebFrame{0};
+    float updateTimeNeb{1.0f/ 30.0f};
+    float runningTimeNeb{};
+
     
     while(!WindowShouldClose()){
         const float deltaTime = GetFrameTime();
+        PlayMusicStream(music);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -102,6 +114,14 @@ int main(){
                 if(frame > 5) frame=0;
                 
             }
+        }
+        // Update nebula running time
+        runningTimeNeb += deltaTime;
+        if(runningTimeNeb >= updateTimeNeb){
+            runningTimeNeb = 0;
+            nebRec->x = (nebFrame * nebRec->width);
+            nebFrame++;
+            if (nebFrame > 8) nebFrame = 0;
         }
         
         // Draw nebula
