@@ -19,8 +19,9 @@ int main(){
     
     // Initialize audio device
     InitAudioDevice();
-
-    Music music = LoadMusicStream("assets/Tar-Hawk.mp3");
+    Music music = LoadMusicStream("assets/TarHawk.mp3");
+    if (!IsMusicValid(music)){ TraceLog(LOG_ERROR, "Failed to load music!"); }
+    else {TraceLog(LOG_INFO, "Music loaded successfully!"); }
     PlayMusicStream(music);
     
     
@@ -71,13 +72,12 @@ int main(){
     
     while(!WindowShouldClose()){
         const float deltaTime = GetFrameTime();
-        PlayMusicStream(music);
+
+        // Update music buffer
+        UpdateMusicStream(music);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-
-        
-        
 
         // Check object on the ground
         if (scarfyPos->y >= (ScreenHeight - scarfyRec->height)){
@@ -133,6 +133,10 @@ int main(){
     }
     UnloadTexture(scarfy);
     UnloadTexture(nebula);
+    // Unload music stream buffers from RAM
+    UnloadMusicStream(music);
+    // Close audio device 
+    CloseAudioDevice();
     delete scarfyPos, scarfyRec;
     delete nebRec, nebPos;
     CloseWindow();
