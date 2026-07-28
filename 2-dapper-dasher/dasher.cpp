@@ -6,6 +6,17 @@
 
 #include <raylib.h>
 
+struct AnimData
+{
+    /* data */
+    Texture2D object;
+    Rectangle rec;
+    Vector2 pos;
+    float velocity;
+    float runningAnim;
+    float updateAnim;
+    int frame;
+};
 
 
 int main(){
@@ -43,31 +54,29 @@ int main(){
     scarfyPos->y = ScreenHeight - scarfyRec->height;
 
     // Nebula variables
-    Texture2D nebula = LoadTexture("assets/12_nebula_spritesheet.png");
-    Rectangle* nebRec = new Rectangle{
+    AnimData* nebulaa = new AnimData{};
+    nebulaa->object = LoadTexture("assets/12_nebula_spritesheet.png");
+    nebulaa->rec = {
         0, // x position
         0, // y position
-        nebula.height/8, // Height
-        nebula.width/8   // Width
-    };
-    float nebVel{-600.0f};
-
-    Vector2* nebPos = new Vector2{
+        static_cast<float>(nebulaa->object.width/8), // Width
+        static_cast<float>(nebulaa->object.height/8), // Height
+        };
+    nebulaa->pos = {
         ScreenWidth, // x
-        ScreenHeight - nebRec->height // y
+        ScreenHeight - nebulaa->rec.height // y
     };
-    
-    int nebVelocity{};
+    nebulaa->velocity = -600.0f;
+    nebulaa->runningAnim = 0;
+    nebulaa->updateAnim = 1.0f/ 30.0f;
+    nebulaa->frame = 0;
+
 
     // Scarfy frame animation
     int frame{0};
     float updateTimeAnim{1.0f/16.0f};
     float runningTimeAnim{0};
 
-    // Nebula frame animation
-    int nebFrame{0};
-    float updateTimeNeb{1.0f/ 30.0f};
-    float runningTimeNeb{};
 
     
     while(!WindowShouldClose()){
@@ -94,8 +103,9 @@ int main(){
             velocity += jumpVel;
             isGrounded = false;
         }
-        // Update nebula position
-        nebPos->x += nebVel * deltaTime;
+        
+        // Update nebula position6
+        nebulaa->pos.x += nebulaa->velocity * deltaTime;
 
         // Update scarfy position
         scarfyPos->y += velocity * deltaTime;
@@ -115,30 +125,32 @@ int main(){
                 
             }
         }
-        // Update nebula running time
-        runningTimeNeb += deltaTime;
-        if(runningTimeNeb >= updateTimeNeb){
-            runningTimeNeb = 0;
-            nebRec->x = (nebFrame * nebRec->width);
-            nebFrame++;
-            if (nebFrame > 8) nebFrame = 0;
+
+        // Update nebula 2 running time
+        nebulaa->runningAnim += deltaTime;
+        if(nebulaa->runningAnim >= nebulaa->updateAnim){
+            nebulaa->runningAnim = 0;
+            nebulaa->rec.x = (nebulaa->frame * nebulaa->rec.width);
+            nebulaa->frame++;
+            if (nebulaa->frame >= 8) nebulaa->frame = 0;
         }
         
+        
         // Draw nebula
-        DrawTextureRec(nebula, *nebRec, *nebPos, WHITE);
+        DrawTextureRec(nebulaa->object, nebulaa->rec, nebulaa->pos, RED);
         // Draw Scarfy
         DrawTextureRec(scarfy, *scarfyRec, *scarfyPos, WHITE);
 
         EndDrawing();
     }
     UnloadTexture(scarfy);
-    UnloadTexture(nebula);
+    // UnloadTexture(nebula);
     // Unload music stream buffers from RAM
     UnloadMusicStream(music);
     // Close audio device 
     CloseAudioDevice();
     delete scarfyPos, scarfyRec;
-    delete nebRec, nebPos;
+    // delete nebRec, nebPos;
     CloseWindow();
 
 }
