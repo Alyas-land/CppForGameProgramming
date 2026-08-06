@@ -71,6 +71,25 @@ int main(){
     nebulaa->updateAnim = 1.0f/ 30.0f;
     nebulaa->frame = 0;
 
+    AnimData nebulaArray[3] {};
+
+    for (int i=0; i<4; i++){
+        nebulaArray[i].object = LoadTexture("assets/12_nebula_spritesheet.png");
+        /*
+        Initialize rectangle
+        */
+        nebulaArray[i].rec.width = static_cast<float>(nebulaa->object.width/8);
+        nebulaArray[i].rec.height = static_cast<float>(nebulaa->object.width/8);
+        nebulaArray[i].rec.x = 0.0;
+        nebulaArray[i].rec.y = 0.0;
+        /*
+        Initialize position
+        */
+       nebulaArray[i].pos.y = ScreenHeight - nebulaa->rec.height;
+        
+    }
+
+
 
     // Scarfy frame animation
     int frame{0};
