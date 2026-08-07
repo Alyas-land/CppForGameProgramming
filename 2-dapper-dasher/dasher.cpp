@@ -5,11 +5,14 @@
 */
 
 #include <raylib.h>
+#include <cstdlib>
+
+
+
 
 struct AnimData
 {
     /* data */
-    Texture2D object;
     Rectangle rec;
     Vector2 pos;
     float velocity;
@@ -18,6 +21,10 @@ struct AnimData
     int frame;
 };
 
+// Initial functions
+bool checkOnGrounded(AnimData PlayerData, int WindowHeight);
+void UpdateAnimation(AnimData nebulaArray[], int numOfNebula, float deltaTime);
+void CreateNebulae(AnimData nebulaArray[], int numOfNebula, Texture2D nebula, int ScreenHeight, int ScreenWidth);
 
 int main(){
 
@@ -30,7 +37,7 @@ int main(){
     
     // Initialize audio device
     InitAudioDevice();
-    Music music = LoadMusicStream("assets/TarHawk.mp3");
+    Music music = LoadMusicStream("assets/Edgerunners-YouCan'tRunFroMeInspired.mp3");
     if (!IsMusicValid(music)){ TraceLog(LOG_ERROR, "Failed to load music!"); }
     else {TraceLog(LOG_INFO, "Music loaded successfully!"); }
     PlayMusicStream(music);
@@ -40,62 +47,59 @@ int main(){
     float gravity{1'000.0f};
     float jumpVel{-650.0f};
     bool isGrounded{false};
-    float velocity{0.0f};
 
     // Scarf variable(dimensions)
     Texture2D scarfy = LoadTexture("assets/scarfy.png");
-    Rectangle* scarfyRec = new Rectangle();
-    scarfyRec->height = scarfy.height;
-    scarfyRec->width = scarfy.width/6;
-    scarfyRec->x = 0; 
-    scarfyRec->y = 0; 
-    Vector2* scarfyPos = new Vector2();
-    scarfyPos->x = (ScreenWidth - scarfyRec->width)/2;
-    scarfyPos->y = ScreenHeight - scarfyRec->height;
+    AnimData scarfyDetail{
+        {
+            // Rectangle init
+            0.0, // x 
+            0.0, // y
+            scarfy.width/6, // width
+            scarfy.height // height
+        }, 
+        {
+            // Position init
+            (ScreenWidth - scarfyDetail.rec.width)/2, // x
+            ScreenHeight - scarfyDetail.rec.height // y
+        },
+        0.0, // velocity
+        0.0, // runningAnim
+        1.0f/16.0f, // updateAnim
+        0 // frame
+    };
 
     // Nebula variables
-    AnimData* nebulaa = new AnimData{};
-    nebulaa->object = LoadTexture("assets/12_nebula_spritesheet.png");
-    nebulaa->rec = {
-        0, // x position
-        0, // y position
-        static_cast<float>(nebulaa->object.width/8), // Width
-        static_cast<float>(nebulaa->object.height/8), // Height
-        };
-    nebulaa->pos = {
-        ScreenWidth, // x
-        ScreenHeight - nebulaa->rec.height // y
-    };
-    nebulaa->velocity = -600.0f;
-    nebulaa->runningAnim = 0;
-    nebulaa->updateAnim = 1.0f/ 30.0f;
-    nebulaa->frame = 0;
+    Texture2D nebula = LoadTexture("assets/12_nebula_spritesheet.png");
+    const int numOfNebula{4};
+    AnimData nebulaArray[numOfNebula] {};
 
-    AnimData nebulaArray[3] {};
+    // for (int i=0; i<numOfNebula; i++){
+    //     /*
+    //     Initialize rectangle
+    //     */
+    //     nebulaArray[i].rec.width = static_cast<float>(nebula.width/8);
+    //     nebulaArray[i].rec.height = static_cast<float>(nebula.width/8);
+    //     nebulaArray[i].rec.x = 0.0;
+    //     nebulaArray[i].rec.y = 0.0;
+    //     /*
+    //     Initialize position
+    //     */
+    //    nebulaArray[i].pos.y = ScreenHeight - nebula.height/8;
+    
+    //    nebulaArray[i].velocity = -600.0f;
+    //    nebulaArray[i].frame = 0;
+    //    nebulaArray[i].runningAnim = 0.0;
+    //    nebulaArray[i].updateAnim = 0.0;
+    // }
 
-    for (int i=0; i<4; i++){
-        nebulaArray[i].object = LoadTexture("assets/12_nebula_spritesheet.png");
-        /*
-        Initialize rectangle
-        */
-        nebulaArray[i].rec.width = static_cast<float>(nebulaa->object.width/8);
-        nebulaArray[i].rec.height = static_cast<float>(nebulaa->object.width/8);
-        nebulaArray[i].rec.x = 0.0;
-        nebulaArray[i].rec.y = 0.0;
-        /*
-        Initialize position
-        */
-       nebulaArray[i].pos.y = ScreenHeight - nebulaa->rec.height;
-        
-    }
+    // nebulaArray[0].pos.x = ScreenWidth;
+    // nebulaArray[1].pos.x = ScreenWidth + 300;
+    // nebulaArray[2].pos.x = ScreenWidth + 600;
 
-
-
-    // Scarfy frame animation
-    int frame{0};
-    float updateTimeAnim{1.0f/16.0f};
-    float runningTimeAnim{0};
-
+    CreateNebulae(nebulaArray, numOfNebula, nebula, ScreenHeight, ScreenWidth);
+    
+    
 
     
     while(!WindowShouldClose()){
@@ -108,57 +112,74 @@ int main(){
         ClearBackground(RAYWHITE);
 
         // Check object on the ground
-        if (scarfyPos->y >= (ScreenHeight - scarfyRec->height)){
+        if (checkOnGrounded(scarfyDetail, ScreenHeight)){
             //rectanglr on the ground
-            velocity = 0.0f;
+            scarfyDetail.velocity = 0.0f;
             isGrounded = true;
         }
         else {
             // Rectangle on the air
-            velocity += gravity * deltaTime;
+            scarfyDetail.velocity += gravity * deltaTime;
         }
         // Check if space key is pressed and rectangle is on the ground
         if(IsKeyDown(KEY_SPACE) && isGrounded){
-            velocity += jumpVel;
+            scarfyDetail.velocity += jumpVel;
             isGrounded = false;
         }
         
         // Update nebula position6
-        nebulaa->pos.x += nebulaa->velocity * deltaTime;
+        for (int i=0; i<numOfNebula; i++){
+            nebulaArray[i].pos.x += nebulaArray[i].velocity * deltaTime;
+        }
+        
 
         // Update scarfy position
-        scarfyPos->y += velocity * deltaTime;
+        scarfyDetail.pos.y += scarfyDetail.velocity * deltaTime;
         
         // Update running time
-        runningTimeAnim += deltaTime;
-        if (runningTimeAnim >= updateTimeAnim){
+        scarfyDetail.runningAnim += deltaTime;
+        if (scarfyDetail.runningAnim >= scarfyDetail.updateAnim){
             // Check scarfy on gound or on air and continue or pause animation frame
             if (!isGrounded) {
-                scarfyRec->x = 5 * scarfyRec->width ;
+                scarfyDetail.rec.x = 5 * scarfyDetail.rec.width ;
             }
             else{
-                runningTimeAnim = 0.0f;
-                scarfyRec->x = (frame * scarfyRec->width);
-                frame++;
-                if(frame > 5) frame=0;
+                scarfyDetail.runningAnim = 0.0f;
+                scarfyDetail.rec.x = (scarfyDetail.frame * scarfyDetail.rec.width);
+                scarfyDetail.frame++;
+                if(scarfyDetail.frame > 5) scarfyDetail.frame=0;
                 
             }
         }
 
-        // Update nebula 2 running time
-        nebulaa->runningAnim += deltaTime;
-        if(nebulaa->runningAnim >= nebulaa->updateAnim){
-            nebulaa->runningAnim = 0;
-            nebulaa->rec.x = (nebulaa->frame * nebulaa->rec.width);
-            nebulaa->frame++;
-            if (nebulaa->frame >= 8) nebulaa->frame = 0;
+        // Update nebulae animation
+        // for (int i=0; i<numOfNebula; i++){
+        //     nebulaArray[i].runningAnim += deltaTime;
+        //     if (nebulaArray[i].runningAnim >= nebulaArray[i].updateAnim){
+        //         nebulaArray[i].runningAnim = 0;
+        //         nebulaArray[i].rec.x = (nebulaArray[i].frame * nebulaArray[i].rec.width);
+        //         nebulaArray[i].frame++;
+        //         if(nebulaArray[i].frame >= 8) nebulaArray[i].frame = 0;
+        //     }
+        // }
+        UpdateAnimation(nebulaArray, numOfNebula, deltaTime);
+        
+        
+        
+        // Draw nebulae
+        for (int i=0; i<numOfNebula; i++){
+            if (i % 3 == 0){
+                 DrawTextureRec(nebula, nebulaArray[i].rec, nebulaArray[i].pos, LIGHTGRAY);
+            }
+            else if (i % 2 == 0){
+                 DrawTextureRec(nebula, nebulaArray[i].rec, nebulaArray[i].pos, ORANGE);
+            }
+            if (i % 2 != 0){
+                 DrawTextureRec(nebula, nebulaArray[i].rec, nebulaArray[i].pos, RED);
+            }
         }
-        
-        
-        // Draw nebula
-        DrawTextureRec(nebulaa->object, nebulaa->rec, nebulaa->pos, RED);
         // Draw Scarfy
-        DrawTextureRec(scarfy, *scarfyRec, *scarfyPos, WHITE);
+        DrawTextureRec(scarfy, scarfyDetail.rec, scarfyDetail.pos, WHITE);
 
         EndDrawing();
     }
@@ -168,8 +189,50 @@ int main(){
     UnloadMusicStream(music);
     // Close audio device 
     CloseAudioDevice();
-    delete scarfyPos, scarfyRec;
     // delete nebRec, nebPos;
     CloseWindow();
 
+}
+
+// check player on gounded or not
+bool checkOnGrounded(AnimData PlayerData, int WindowHeight){
+    return (PlayerData.pos.y >= (WindowHeight - PlayerData.rec.height));
+}
+
+void CreateNebulae(AnimData nebulaArray[], int numOfNebula, Texture2D nebula, int ScreenHeight, int ScreenWidth){
+        for (int i=0; i<numOfNebula; i++){
+            /*
+            Initialize rectangle
+            */
+            nebulaArray[i].rec.width = static_cast<float>(nebula.width/8);
+            nebulaArray[i].rec.height = static_cast<float>(nebula.width/8);
+            nebulaArray[i].rec.x = 0.0;
+            nebulaArray[i].rec.y = 0.0;
+            /*
+            Initialize position
+            */
+           nebulaArray[i].pos.y = ScreenHeight - nebula.height/8;
+        
+           nebulaArray[i].velocity = -600.0f;
+           nebulaArray[i].frame = 0;
+           nebulaArray[i].runningAnim = 0.0;
+           nebulaArray[i].updateAnim = 0.0;
+        }
+    
+        nebulaArray[0].pos.x = ScreenWidth;
+        nebulaArray[1].pos.x = ScreenWidth + 300;
+        nebulaArray[2].pos.x = ScreenWidth + 600;        
+    }
+
+// update animaion of enemy(nebula) each frame in game loop
+void UpdateAnimation(AnimData nebulaArray[], int numOfNebula, float deltaTime){
+    for (int i=0; i<numOfNebula; i++){
+        nebulaArray[i].runningAnim += deltaTime;
+        if (nebulaArray[i].runningAnim >= nebulaArray[i].updateAnim){
+            nebulaArray[i].runningAnim = 0;
+            nebulaArray[i].rec.x = (nebulaArray[i].frame * nebulaArray[i].rec.width);
+            nebulaArray[i].frame++;
+            if(nebulaArray[i].frame >= 8) nebulaArray[i].frame = 0;
+        }
+    }
 }
