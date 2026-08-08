@@ -24,7 +24,7 @@ struct AnimData
 // Initial functions
 bool checkOnGrounded(AnimData PlayerData, int WindowHeight);
 void UpdateAnimation(AnimData nebulaArray[], int numOfNebula, float deltaTime);
-void CreateNebulae(AnimData nebulaArray[], int numOfNebula, Texture2D nebula, int ScreenHeight, int ScreenWidth);
+void SpawnNebulae(AnimData nebulaArray[], int numOfNebula, Texture2D nebula, int ScreenHeight, int ScreenWidth);
 
 int main(){
 
@@ -97,7 +97,7 @@ int main(){
     // nebulaArray[1].pos.x = ScreenWidth + 300;
     // nebulaArray[2].pos.x = ScreenWidth + 600;
 
-    CreateNebulae(nebulaArray, numOfNebula, nebula, ScreenHeight, ScreenWidth);
+    SpawnNebulae(nebulaArray, numOfNebula, nebula, ScreenHeight, ScreenWidth);
     
     
 
@@ -199,7 +199,7 @@ bool checkOnGrounded(AnimData PlayerData, int WindowHeight){
     return (PlayerData.pos.y >= (WindowHeight - PlayerData.rec.height));
 }
 
-void CreateNebulae(AnimData nebulaArray[], int numOfNebula, Texture2D nebula, int ScreenHeight, int ScreenWidth){
+void SpawnNebulae(AnimData nebulaArray[], int numOfNebula, Texture2D nebula, int ScreenHeight, int ScreenWidth){
         for (int i=0; i<numOfNebula; i++){
             /*
             Initialize rectangle
