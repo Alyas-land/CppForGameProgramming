@@ -49,6 +49,19 @@ int main(){
     float jumpVel{-650.0f};
     bool isGrounded{false};
 
+
+    // Initialize background
+    Texture2D background = LoadTexture("assets/far-buildings.png");
+    float moveBgX{};
+    float moveBgX2{};
+
+    // Initialize midground and foreground
+    Texture2D midground = LoadTexture("assets/back-buildings.png");
+    float midMoveBgX{};
+    float midMoveBgX2{};
+    Texture2D foreground = LoadTexture("assets/foreground.png");
+    float foreMoveBgX{};
+
     // Scarf variable(dimensions)
     Texture2D scarfy = LoadTexture("assets/scarfy.png");
     AnimData scarfyDetail{
@@ -111,6 +124,37 @@ int main(){
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        // background
+        if (moveBgX <= -background.width * 3.2){
+            moveBgX = 0.0;
+        }
+        moveBgX -= 25 * deltaTime;
+        Vector2 bgPosition {moveBgX, 0.0};
+        DrawTextureEx(background, bgPosition, 0.0, 3.2, WHITE);
+        Vector2 tempBgPosition {moveBgX + (background.width * 3.2), 0.0};
+        DrawTextureEx(background, tempBgPosition, 0.0, 3.2, WHITE);
+
+        // midground and foreground
+        if (midMoveBgX <= -midground.width * 3.2){
+            midMoveBgX = 0.0;
+        }
+        if (foreMoveBgX <= -foreground.width * 3.2){
+            foreMoveBgX = 0.0;
+        }
+        midMoveBgX -= 40.0 * deltaTime;
+        Vector2 midPosition {midMoveBgX, 0.0};
+        DrawTextureEx(midground, midPosition, 0.0, 3.2, WHITE);
+        Vector2 tempMidPosition {midMoveBgX + (midground.width * 3.2), 0.0};
+        DrawTextureEx(midground, tempMidPosition, 0.0, 3.2, WHITE);
+
+        foreMoveBgX -= 80.0 * deltaTime;
+        Vector2 forePosition {foreMoveBgX, 0.0};
+        DrawTextureEx(foreground, forePosition, 0.0, 3.2, WHITE);
+        Vector2 tempForePosition {foreMoveBgX + (foreground.width * 3.2), 0.0};
+        DrawTextureEx(foreground, tempForePosition, 0.0, 3.2, WHITE);
+
+
+
 
         // Check object on the ground
         if (checkOnGrounded(scarfyDetail, ScreenHeight)){
@@ -175,7 +219,10 @@ int main(){
         EndDrawing();
     }
     UnloadTexture(scarfy);
-    // UnloadTexture(nebula);
+    UnloadTexture(nebula);
+    UnloadTexture(background);
+    UnloadTexture(midground);
+    UnloadTexture(foreground);
     // Unload music stream buffers from RAM
     UnloadMusicStream(music);
     // Close audio device 
@@ -204,7 +251,7 @@ void SpawnNebulae(AnimData nebulaArray[], int numOfNebula, Texture2D nebula, int
             */
            nebulaArray[i].pos.y = ScreenHeight - nebula.height/8;
         
-           nebulaArray[i].velocity = -600.0f;
+           nebulaArray[i].velocity = -200.0f;
            nebulaArray[i].frame = 0;
            nebulaArray[i].runningAnim = 0.0;
            nebulaArray[i].updateAnim = 0.0;
