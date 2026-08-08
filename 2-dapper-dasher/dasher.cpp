@@ -24,6 +24,7 @@ struct AnimData
 // Initial functions
 bool checkOnGrounded(AnimData PlayerData, int WindowHeight);
 void UpdateAnimation(AnimData nebulaArray[], int numOfNebula, float deltaTime);
+AnimData UpdateAnimation(AnimData data, float deltaTime, int maxFrame);
 void SpawnNebulae(AnimData nebulaArray[], int numOfNebula, Texture2D nebula, int ScreenHeight, int ScreenWidth);
 
 int main(){
@@ -127,42 +128,32 @@ int main(){
             isGrounded = false;
         }
         
+        
+        // Update scarfy position
+        scarfyDetail.pos.y += scarfyDetail.velocity * deltaTime;
+        
+        // Update running time scarfy
+        if (isGrounded) {
+            scarfyDetail = UpdateAnimation(scarfyDetail, deltaTime, 5);
+            // Check scarfy on gound or on air and continue or pause animation frame  
+        }
+        else{
+            scarfyDetail.rec.x = 5 * scarfyDetail.rec.width ;
+        }
+        
         // Update nebula position6
         for (int i=0; i<numOfNebula; i++){
             nebulaArray[i].pos.x += nebulaArray[i].velocity * deltaTime;
         }
-        
-
-        // Update scarfy position
-        scarfyDetail.pos.y += scarfyDetail.velocity * deltaTime;
-        
-        // Update running time
-        scarfyDetail.runningAnim += deltaTime;
-        if (scarfyDetail.runningAnim >= scarfyDetail.updateAnim){
-            // Check scarfy on gound or on air and continue or pause animation frame
-            if (!isGrounded) {
-                scarfyDetail.rec.x = 5 * scarfyDetail.rec.width ;
+        //Update nebulae animation
+        for (int i=0; i<numOfNebula; i++){
+            // update data for each nebula by pass to UpdateAnimation function
+            nebulaArray[i] = UpdateAnimation(nebulaArray[i], deltaTime, 8);
             }
-            else{
-                scarfyDetail.runningAnim = 0.0f;
-                scarfyDetail.rec.x = (scarfyDetail.frame * scarfyDetail.rec.width);
-                scarfyDetail.frame++;
-                if(scarfyDetail.frame > 5) scarfyDetail.frame=0;
-                
-            }
-        }
-
-        // Update nebulae animation
-        // for (int i=0; i<numOfNebula; i++){
-        //     nebulaArray[i].runningAnim += deltaTime;
-        //     if (nebulaArray[i].runningAnim >= nebulaArray[i].updateAnim){
-        //         nebulaArray[i].runningAnim = 0;
-        //         nebulaArray[i].rec.x = (nebulaArray[i].frame * nebulaArray[i].rec.width);
-        //         nebulaArray[i].frame++;
-        //         if(nebulaArray[i].frame >= 8) nebulaArray[i].frame = 0;
-        //     }
-        // }
-        UpdateAnimation(nebulaArray, numOfNebula, deltaTime);
+        
+        
+        // Now, nothing ...
+        //UpdateAnimation(nebulaArray, numOfNebula, deltaTime);
         
         
         
@@ -235,4 +226,17 @@ void UpdateAnimation(AnimData nebulaArray[], int numOfNebula, float deltaTime){
             if(nebulaArray[i].frame >= 8) nebulaArray[i].frame = 0;
         }
     }
+}
+
+AnimData UpdateAnimation(AnimData data, float deltaTime, int maxFrame){
+    data.runningAnim += deltaTime;
+    if (data.runningAnim >= data.updateAnim){
+        data.runningAnim = 0;
+        data.rec.x = (data.frame * data.rec.width);
+        data.frame++;
+        if(data.frame > maxFrame) data.frame = 0;
+    }
+
+    return data;
+
 }
