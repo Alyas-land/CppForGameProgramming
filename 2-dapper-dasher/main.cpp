@@ -36,6 +36,9 @@ int main(){
     const int ScreenHeight{600};
     // Initialize game screen
     InitWindow(ScreenWidth, ScreenHeight, "Dapper Dasher");
+    // Set icon for game
+    Image icon = LoadImage("assets/icon.png");
+    SetWindowIcon(icon);
     SetTargetFPS(60);
 
     // Initialize game state
